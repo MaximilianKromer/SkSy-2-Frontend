@@ -1,3 +1,8 @@
+# costume
+todo-list/node_modules/
+todo-list/.cache/
+todo-list/public
+
 # Logs
 logs
 *.log
