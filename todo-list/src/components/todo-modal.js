@@ -13,15 +13,15 @@ const TodoModal = ({show, handleClose, save, handleChange, defaultTodo}) => {
       <Modal.Body>
         <Form.Group controlId="TextInput" className="mb-3">
           <Form.Label>Todo Name</Form.Label>
-          <Form.Control name="name" type="text" placeholder="Todo Name" defaultValue={defaultTodo.name} onChange={handleChange} /> 
+          <Form.Control name="description" type="text" placeholder="Todo Name" defaultValue={defaultTodo.description} onChange={handleChange} /> 
         </Form.Group>
         <Form.Group controlId="DateInput" className="mb-3">
-          <Form.Label>Date</Form.Label>
-          <Form.Control name="date" type="date" placeholder="Date" defaultValue={defaultTodo.date} onChange={handleChange} />
+          <Form.Label>Deadline</Form.Label>
+          <Form.Control name="deadline" type="date" placeholder="Date" defaultValue={defaultTodo.deadline} onChange={handleChange} />
         </Form.Group>
         <Form.Group controlId="PercentInput" className="mb-3">
           <Form.Label>Percent done</Form.Label>
-          <Form.Control name="percent" type="number" placeholder="%" defaultValue={defaultTodo.percent} onChange={handleChange} />
+          <Form.Control name="percent_done" type="number" placeholder="%" defaultValue={defaultTodo.percent_done} onChange={handleChange} />
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>

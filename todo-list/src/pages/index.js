@@ -1,61 +1,107 @@
 import React, { useState } from "react"
 import TodoElement from "../components/todo-element"
+import Axios from "axios"
 
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import Modal from 'react-bootstrap/Modal';
 import TodoModal from "../components/todo-modal";
+import Alert from 'react-bootstrap/Alert';
+
+const serverUrl = "http://127.0.0.1:5000"
 
 
 const IndexPage = () => {
-  // call an api with axios on page load
-  React.useEffect(() => {
-    // axios.get("https://jsonplaceholder.typicode.com/todos")
-    //   .then(response => {
-    //     console.log(response.data)
-    //   })
-    //   .catch(error => {
-    //     console.log(error)
-    //   })
-  }, [])
 
   // state with todos
   const [todos, setTodos] = React.useState([
-    {id: 1, name: "Test Todo1s", date: "2023-01-01", percent: "12"},
-    {id: 2, name: "Test Todos2", date: "2023-04-20", percent: "14"},
-    {id: 3, name: "Test Todos3", date: "2023-03-23", percent: "16"},
+    {id: 1, description: "Test Todo1s", deadline: "2023-01-01", percent_done: "12"},
+    {id: 2, description: "Test Todos2", deadline: "2023-04-20", percent_done: "14"},
+    {id: 3, description: "Test Todos3", deadline: "2023-03-23", percent_done: "16"},
   ])
+
+  // async todos (request if true)
+  const [asyncTodos, setAsyncTodos] = React.useState(true)
+
+  // call an api with axios on page load
+  React.useEffect(() => {
+
+    if(!asyncTodos) return
+
+    setAsyncTodos(false)
+    Axios.get(serverUrl + "/api/todo")
+      .then(response => {
+        console.log(response.data)
+        setTodos(response.data.todos)
+      })
+      .catch(error => {
+        console.log(error)
+        console.log("====================================")
+        console.log(`Something bad happened while fetching the data\n${error}`)
+        console.log("====================================")
+      })
+  }, [asyncTodos])
 
   // modal state
   const [show, setShow] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    date: "",
-    percent: ""
+    namdescriptione: "",
+    deadline: "",
+    percent_done: ""
   })
 
   function handleClose() {
     setShow(false);
-    setFormData({name: "", date: "", percent: ""})
+    setFormData({description: "", deadline: "", percent_done: ""})
   }
   const handleShow = () => setShow(true);
 
   function deleteTodo(id) {
-    setTodos(todos.filter(todo => todo.id != id))
+    setTodos(todos.filter(todo => todo.id !== id))
+    Axios.delete(serverUrl + "/api/todo/" + id)
+      .then(response => {
+        console.log(response.data)
+        setAsyncTodos(true)
+      })
+      .catch(error => {
+        console.log(error)
+        setAsyncTodos(true)
+      })
   }
+
+  // out of sync messafe
+  const alert = <Alert variant="warning">Not in Sync with Server. Please wait...</Alert>
 
   function addTodo() {
     // check if formDate has an id
     if(formData.id) {
       // update todo
-      let ind = todos.findIndex((todo => todo.id == formData.id))
+      let ind = todos.findIndex((todo => todo.id === formData.id))
       todos[ind] = formData
       setTodos([...todos])
+      Axios.post(serverUrl + "/api/todo/" + formData.id, formData)
+        .then(response => {
+          console.log(response.data)
+          setAsyncTodos(true)
+        })
+        .catch(error => {
+          console.log(error)
+          setAsyncTodos(true)
+        })
 
     } else {
-    setTodos([...todos, {id: todos.length+1, ...formData}])
+      // add todo
+      setTodos([...todos, {id: todos.length+150, ...formData}])
+      Axios.post(serverUrl + "/api/todo", formData)
+        .then(response => {
+          console.log(response.data)
+          setAsyncTodos(true)
+        })
+        .catch(error => {
+          console.log(error)
+          setAsyncTodos(true)
+        })
     }
-    setFormData({name: "", date: "", percent: ""})
+    setFormData({name: "", deadline: "", percent_done: ""})
   }
 
   function handleChange(e) {
@@ -77,11 +123,12 @@ const IndexPage = () => {
       <h1>
         ToDos
       </h1>
+      {asyncTodos ? alert : null}
       <table className="table table-striped table-bordered">
        <thead>
         <tr>
           <th>Description</th>
-          <th>Time</th>
+          <th>Deadline</th>
           <th>Percent done</th>
           <th>Actions</th>
         </tr>
