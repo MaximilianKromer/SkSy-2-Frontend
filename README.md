@@ -6,6 +6,10 @@ Homework for scalable systems
 Start by going to the directory with
 
     cd todo-list
+    
+Install Dependencies with
+
+    npm install
 
 Start the local development server with
 
